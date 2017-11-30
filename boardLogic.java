@@ -39,13 +39,13 @@ public class boardLogic{
 	}
 
 	public void setP1Tiles() {
-		p1Tiles[0] = "A";
-		p1Tiles[1] = "B";
-		p1Tiles[2] = "C";
-		p1Tiles[3] = "D";
-		p1Tiles[4] = "E";
-		p1Tiles[5] = "F";
-		p1Tiles[6] = "G";
+		p1Tiles[0] = tile.tile("A");
+		p1Tiles[1] = tile.tile("B");
+		p1Tiles[2] = tile.tile("C");
+		p1Tiles[3] = tile.tile("D");
+		p1Tiles[4] = tile.tile("E");
+		p1Tiles[5] = tile.tile("F");
+		p1Tiles[6] = tile.tile("G");
 	}
 	
 	public void play() {
