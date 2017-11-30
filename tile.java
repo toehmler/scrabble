@@ -16,8 +16,11 @@ public class tile {
 		letterVal = s;
 		numVal = 0;
 	}
-
-
+	
+	public static tile tile(String s) {
+		//method to call constructor 
+		return tile(s); 
+	}
 }
 
 	
