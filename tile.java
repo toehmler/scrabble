@@ -1,20 +1,24 @@
 import java.awt.*;
 
-public class tile extends Button 
-{
+public class tile {
 
-	protected String letterVal;
-	protected int numVal;
-	protected int index;
-	
+	public String letterVal;
+	public int numVal;
+
 	public tile() {
+		//constructor for tiles on the board
 		letterVal = null;
 		numVal = 0;
-		index = 0;
-		this.setBackground(Color.white);
-		this.setBackground(Color.black);
 	}
 
+	public tile(String s) {
+		//constructor for players tiles
+		letterVal = s;
+		numVal = 0;
+	}
+
+
 }
+
 	
 

@@ -6,45 +6,30 @@ import java.awt.event.*;
 
 public class scrabble extends Applet  
 {
+	boardCanvas board;
+	playerTileCanvas board;
+	directionsCanvas directions;
+
 	protected boardLogic logic;
 
+
 	public void init() {
-		setFont(new Font("TimesRoman", Font.BOLD, 10));
-		logic = new boardLogic();
+		setFont(new Font("TimesRoman", Font.BOLD, 12));
+		logic = new boardLogic(this, 225);
+		setSize(800,1000);
 		setLayout(new BorderLayout());
-		add("Center", createBoard());
-		setSize(600,600);
-		Button b = new Button("test");
-		add("North", b);
-		add("South", createTiles());
+		board = new boardCanvas(logic);
+		board.addMouseListener(board);
+		add("Center", board);
+		playerTiles = new playerTileCanvas(logic);
+		playerTiles.addMouseListener(playerTiles);
+		add("South", playerTiles);
+		directions = new directionsCanvas(logic);
+		directions.addMouseListener(directions);
+		add("North", directions);
+		logic.play();
 	}
 
-	protected Panel createTiles() {
-		//create playable tiles at the bottom of the screen
-		Panel tiles = new Panel();
-		tiles.setLayout(new FlowLayout());
-		for (int i=0;i<7;i++) {
-			playTile t = new playTile("A");
-			playTileListener listener = new playTileListener(t, this.logic);
-			t.addActionListener(listener);
-			tiles.add(t);
-		}
-		return tiles;
-	}
-
-	protected Panel createBoard() {
-		//create board of 10x10 tiles
-		Panel board = new Panel();
-		board.setLayout(new GridLayout(10,10));
-		for (int i=0;i<100;i++) {
-			tile t = new tile();
-			t.index = i;
-			tileListener listener = new tileListener(t, logic);
-			t.addActionListener(listener);
-			board.add(t);
-		}
-		return board;
-	}
 }
 
 
