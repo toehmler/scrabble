@@ -6,6 +6,7 @@ public class boardLogic{
 	public tile[] board;
 	public tile[] p1Tiles;
 	public String directions;
+	public int orientation; 
 	public boolean p1Turn;
 	public boolean gameInProgress;
 	protected boolean wordStarted;
@@ -26,7 +27,7 @@ public class boardLogic{
 		this.numTiles = numTiles;
 		tile[] board = new tile[numTiles];
 		tile[] p1Tiles = new tile[7];
-		setp1Tiles();
+		setP1Tiles();
 		selected = null;
 		ai = new scrabbleAI(this);
 		p1Score = 0;
@@ -39,18 +40,18 @@ public class boardLogic{
 	}
 
 	public void setP1Tiles() {
-		p1Tiles[0] = "A";
-		p1Tiles[1] = "B";
-		p1Tiles[2] = "C";
-		p1Tiles[3] = "D";
-		p1Tiles[4] = "E";
-		p1Tiles[5] = "F";
-		p1Tiles[6] = "G";
+		p1Tiles[0] = new tile("A");
+		p1Tiles[1] = new tile("B");
+		p1Tiles[2] = new tile("C");
+		p1Tiles[3] = new tile("D");
+		p1Tiles[4] = new tile("E");
+		p1Tiles[5] = new tile("F");
+		p1Tiles[6] = new tile("G");
 	}
 	
 	public void play() {
 		//while there is no winner:
-		gameInProgess = true;
+		gameInProgress = true;
 		p1TurnStart();
 	}
 
@@ -104,7 +105,7 @@ public class boardLogic{
 	}
 
 	public void selectTile(int index) {
-		selected = p1Tiles[index];
+		selected = String.valueOf(p1Tiles[index]);
 	}
 
 	public void submitMove() {
