@@ -41,13 +41,13 @@ public class boardLogic {
 		selectedTile = new tile();
 		currentWord = new word();
 
-		bag = new Vector<tile>();
+		bag = new Vector();
 
 		p1score = 0;
 		p2score = 0;
 
-		placedTileIndicies = new Vector<int>();
-		wordsPlayed = new Vector<word>();
+		placedTileIndicies = new Vector();
+		wordsPlayed = new Vector();
 	}
 
 	public void setP11iles() {
@@ -79,8 +79,8 @@ public class boardLogic {
 
 	public void selectTile(int index) {
 		if (p1turn) {
-			selected = p1tiles[index];
-			strDir = "You have choosen '"+selected.letterVal+"' select a location.";
+			selectedTile = p1tiles[index];
+			strDir = "You have choosen '"+ selectedTile.letterVal+"' select a location.";
 			display.directionsDisplay.repaint();
 		} else {
 			strDir = "It is not your turn.";
@@ -134,7 +134,7 @@ public class boardLogic {
 			}
 			return true;
 		} else {
-			for (int i=1;i<=spacestwn;i++) {
+			for (int i=1;i<=spacesBtwn;i++) {
 				if (board[index2+(i*15)].isEmpty()) 
 					return false;
 			}
@@ -210,7 +210,7 @@ public class boardLogic {
 		if (wordStarted == false) {
 			wordStarted = true;
 			currentWord.startIndex = index;
-			currentWord.endIndex = start;
+			currentWord.endIndex = index;
 			board[index] = p1tiles[playerTileIndex];
 			//add way of removing tiles from player
 			//add way to keep track of indicies where tiles were placed
@@ -226,5 +226,3 @@ public class boardLogic {
 		p1tiles[playerTileIndex] = null;
 	}
 }
-
-
