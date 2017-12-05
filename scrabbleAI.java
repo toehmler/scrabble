@@ -1,10 +1,27 @@
 public class scrabbleAI {
 
 	protected boardLogic logic;
+	protected tile[] cmpTiles;
 
 	public scrabbleAI(boardLogic logic) {
 	   this.logic = logic;
+	   cmpTiles = new tile[7];
+	   setCmpTiles();
 	}	   
 
-	//calc next move;
+	protected void setCmpTiles() { //used for testing
+		String letters[] = {"H","I","J","K","L","M","J"};
+		for (int i=0;i<letters.length;i++) {
+			cmpTiles[i] = new tile(letters[i]);
+		}
+	}
+
+	protected void makeMove() {
+	}
+
+
+
+
+
+
 }
