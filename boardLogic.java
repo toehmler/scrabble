@@ -286,6 +286,7 @@ public class boardLogic {
 		for (int i=currentWord.startIndex;i<=currentWord.startIndex;i+=increment) {
 			if (currentWord.orientation == 1) {
 				if (board[i-1].hasVal() || board[i+1].hasVal()) {
+					currentIntersects = true;
 					int start = i;
 					int end = i;
 					while (board[start-1].hasVal()) 
@@ -301,6 +302,7 @@ public class boardLogic {
 				} 
 			} else {
 				if (board[i-15].hasVal() || board[i+15].hasVal()) {
+					currentIntersects = true;
 					int start = i;
 					int end = i;
 					while (board[start-15].hasVal())
@@ -335,7 +337,7 @@ public class boardLogic {
 	protected void submitCurrentWord() {
 		//called when the submit button is called
 		if (wordisValid(currentWord)) {
-			if (scoreCrossWords())
+			if (currentIntersects  && scoreCrossWords())
 				p1score += scoreWord(currentWord);
 			else {
 				resetTurn();
