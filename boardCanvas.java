@@ -13,22 +13,35 @@ class boardCanvas extends Canvas implements MouseListener {
 	protected int numPerRow;
 	protected int borderWidth;
 
-//	int boardLogic logic;
+	//	int boardLogic logic;
 
 	public boardCanvas() {
 		this.size = 30;
 		this.numTiles = 225;
 		this.numPerRow = 15;
-		this.borderWidth = 23;
+		this.borderWidth = 23; 
 	}
 	
+	public static final Color LIGHTred = new Color(255,102,102);
+	public static final Color LIGHTyellow = new Color(255, 255, 230);
+	  
 	public void paint(Graphics g) {
+		g.drawRect(0, 0, 496, 600);
 		for (int i=0;i<numTiles;i++) {
 			//draw a grid of 100 boxes 
 			int x = borderWidth + ((i%15)*size);
 			int y = borderWidth + ((i/numPerRow)*size);
+			if(i == 112) {
+				g.setColor(LIGHTred);
+				g.fillRect(x, y, size, size);
+				g.setColor(Color.black);
+				g.drawRect(x, y, size, size);
+			}else {
+			g.setColor(LIGHTyellow);
+			g.fillRect(x, y, size, size);
 			g.setColor(Color.black);
-			g.drawRect(x,y,size,size);
+			g.drawRect(x, y, size, size);
+			}
 		}
 	}
 
@@ -55,12 +68,3 @@ class boardCanvas extends Canvas implements MouseListener {
 	public void mouseEntered(MouseEvent event) { }
 	public void mouseExited(MouseEvent event) { }
 }
-
-
-
-		
-			
-
-			
-	
-
