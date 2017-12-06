@@ -12,14 +12,14 @@ class boardCanvas extends Canvas implements MouseListener {
 	protected int numTiles;
 	protected int numPerRow;
 	protected int borderWidth;
-
-	//	int boardLogic logic;
+	protected boardLogic logic;
 
 	public boardCanvas() {
 		this.size = 30;
 		this.numTiles = 225;
 		this.numPerRow = 15;
 		this.borderWidth = 23; 
+		this.logic = scrabble.logic; 
 	}
 	
 	public static final Color LIGHTred = new Color(255,102,102);
