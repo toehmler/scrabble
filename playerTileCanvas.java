@@ -10,11 +10,10 @@ class playerTileCanvas extends Canvas implements MouseListener {
 	protected int size;
 	boolean [] clicked = {false, false, false, false, false, false, false, false};
 	boolean submitClicked; 
-	
-	//protected boardLogic logic;
+	protected boardLogic logic;
 
 	public playerTileCanvas() {
-		//this.logic = new boardLogic(display, 225);
+		this.logic = scrabble.logic;
 		this.size = 62;
 		submitClicked = false; 
 	}
@@ -71,14 +70,16 @@ class playerTileCanvas extends Canvas implements MouseListener {
 		if (x>=0 && x<=(7*size) && y>=0 && y<size) {
 			//handle when one of the players tiles is selected;
 			int tileIndex = x/size;
-			//ogic.selectTile(tileIndex);
-			System.out.println("selectTile("+tileIndex+")");
+			//System.out.println("selectTile("+tileIndex+")");
 			clicked[tileIndex] = true; 
     			repaint(); 
+    			logic.selectTile(tileIndex);
+    			repaint(); 
 		} else if (x>=(7*size) && x<(8*size) && y >= 0 && y<size) {
-			//logic.submitMove();
 			System.out.println("submitMove()");
 			submitClicked = true; 
+			repaint();
+			logic.submitCurrentWord();
 			repaint(); 
 		}
 	}
@@ -98,7 +99,3 @@ class playerTileCanvas extends Canvas implements MouseListener {
     public void mouseExited(MouseEvent event) { }
 
 }
-
-
-
-
