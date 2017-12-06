@@ -13,6 +13,7 @@ class directionsCanvas extends Canvas implements MouseListener {
 	boolean shuffleClicked; 
 	boolean skipClicked; 
 	boolean exchangeClicked; 
+	protected boardLogic logic; 
 	
 
 	public directionsCanvas() {
@@ -24,6 +25,7 @@ class directionsCanvas extends Canvas implements MouseListener {
 		shuffleClicked = false; 
 		skipClicked = false; 
 		exchangeClicked = false; 
+		this.logic = scrabble.logic;
 	}
 
 	public static final Color LIGHTblue = new Color(0, 204, 255);
@@ -65,22 +67,22 @@ class directionsCanvas extends Canvas implements MouseListener {
 		g.drawString("Shuffle", shuffleX, 35);
 		g.drawString("Skip Turn", skipX, 35);
 	    g.drawString("Exchange", exchangeX, 35);
-	    //g.drawString(logic.directions,directionsX,0);
 	    g.setFont(new Font("Impact", Font.PLAIN, 10));
-	  	g.drawString("Welcome to Scrabble 2.0! Click to play", directionsX, 35);
+	    g.drawString(logic.strDir, directionsX, 35);
+	    //repaint(); 
 	}
 
 	public void mousePressed(MouseEvent event) {
 		Point p = event.getPoint();
 		if (p.x>=directionsX && p.x<shuffleX && p.y>=0 && p.y<100) {
-			System.out.println("logic.play()");
-			//if (logic.gameInProgress = false)
-			//	logic.play();
+			//System.out.println("logic.play()");
+			if (logic.gameInProgress = false)
+				logic.play();
 		} else if (p.x>=shuffleX && p.x<skipX && p.y>=0 && p.y<100) {
-			//logic.shuffle();
 			System.out.println("logic.shuffle()");
 			shuffleClicked = true; 
 			repaint(); 
+			//logic.shuffle();
 		} else if (p.x>=skipX && p.x<exchangeX && p.y>=0 && p.y<100) {
 			System.out.println("logic.skip()");
 			skipClicked = true;
