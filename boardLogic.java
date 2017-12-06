@@ -7,6 +7,8 @@ public class boardLogic {
 
 	protected tile[] board;
 	protected tile[] p1tiles;
+
+	public int selectedTileIndex;
 	
 	public String strDir;
 	
@@ -35,8 +37,11 @@ public class boardLogic {
 
 	public boardLogic(scrabble display) {
 		board = new tile[225];
+		populateBoard();
 		p1tiles = new tile[7];
+		setP1tiles();
 
+		selectedTileIndex = -1;
 		
 		strDir = "Welcome to Scrabble. Click this text to start a new game.";
 		p1turn = false;
@@ -56,10 +61,18 @@ public class boardLogic {
 		placedTileIndicies = new Vector();
 		wordsPlayed = new Vector();
 
+		this.display = display;
+
+	}
+
+	protected void populateBoard() {
+		for (int i=0;i<225;i++) {
+			board[i] = new tile();
+		}
 	}
 
 
-	public void setP11iles() {
+	public void setP1tiles() {
 		String letters[] = {"A","B","C","D","E","F","G"};
 		for (int i=0;i<letters.length;i++) {
 			p1tiles[i] = new tile(letters[i]);
@@ -67,43 +80,53 @@ public class boardLogic {
 	}
 
 	public boolean isWinner() {
+		/*
 		if (bag.isEmpty())
 			return true;
 		else
 			return false;
+			*/
+		return false;
 	}
 
-
 	public void play() {
-		while (!isWinner()) {
+		/*
+		while (isWinner() == false) {
+			strDir = "Please select a tile.";
 			gameInProgress = true;
 			p1turn = true;
 			if (p1turn == false) {
 				ai.makeMove();
 			}
 		}
-		strDir = "The game is over";
-		display.directionsDisplay.repaint();
+		*/
+		//
+		//strDir = "The game is over";
+		strDir = "Please select a tile.";
+		gameInProgress = true;
+		p1turn = true;
+
 	}
 
 	public void selectTile(int index) {
 		if (p1turn) {
 			selectedTile = p1tiles[index];
 			strDir = "You have choosen '"+ selectedTile.letterVal+"' select a location.";
-			display.directionsDisplay.repaint();
+			selectedTileIndex = index;
 		} else {
 			strDir = "It is not your turn.";
-			display.directionsDisplay.repaint();
 		}
 	}
 
-	public void placeTile(int index, int playerTileIndex) {
+	public void placeTile(int index) {
+		addToBoard(index, selectedTileIndex);
+		/*
 		if (isValidLocation(index)) 
-			addToBoard(index, playerTileIndex);
+			addToBoard(index, selectedTileIndex);
 		else { 
 			strDir = "Select a valid location.";
-			display.directionsDisplay.repaint();
 		}
+		*/
 	}
 
 	protected boolean inSameCol(int index1, int index2) {
@@ -247,7 +270,7 @@ public class boardLogic {
 			setBoardTile(index, playerTileIndex);
 		}
 		placedTileIndicies.add(playerTileIndex);
-		p1tiles[playerTileIndex] = null;
+		p1tiles[playerTileIndex] = new tile();
 	}
 
 	protected String wordToString(word w) {

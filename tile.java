@@ -8,7 +8,7 @@ public class tile {
 
 	public tile() {
 		//constructor for tiles on the board
-		letterVal = null;
+		letterVal = "";
 		numVal = 0;
 		mult = 1;
 	}

@@ -8,12 +8,9 @@ public class scrabble extends Applet {
 	
 	private static final long serialVersionUID = 1L; 
 
-	public boardCanvas boardDisplay;
-	public playerTileCanvas playerTileDisplay;
-	public directionsCanvas directionsDisplay;
-	public scoreCanvas scoreDisplay;
+	public scrabbleCanvas display;
 
-//	protected boardLogic logic;
+	protected boardLogic logic;
 
 	public void init() {
 
@@ -21,21 +18,20 @@ public class scrabble extends Applet {
 		setFont(new Font("TimesRoman", Font.BOLD, 12));
 		setSize(496,660);
 
-		//init a new logic object
-//		logic = new boardLogic(this);
-		
-		//init canvas objects
-		boardDisplay = new boardCanvas();
-		playerTileDisplay = new playerTileCanvas();
-		directionsDisplay = new directionsCanvas();
-		scoreDisplay = new scoreCanvas();
-		//add mouse listeners
-		
-		boardDisplay.addMouseListener(boardDisplay);
-		playerTileDisplay.addMouseListener(playerTileDisplay);
-		directionsDisplay.addMouseListener(directionsDisplay);
-		
 
+
+		//init a new logic object
+		logic = new boardLogic(this);
+
+		
+		display = new scrabbleCanvas(logic);
+
+		display.addMouseListener(display);
+		
+		setLayout(new BorderLayout());
+		add("Center", display);
+
+		/*
 		//put the players tiles and directions into panel
 		Panel buttonPanel = new Panel();
 		buttonPanel.setLayout(new BorderLayout());
@@ -54,8 +50,7 @@ public class scrabble extends Applet {
 		add("Center", boardDisplay);
 		add("South", buttonPanel);
 		add("North", scoreDisplay);
-
-
+		*/
 	}
 }
 
