@@ -11,6 +11,7 @@ public class scoreCanvas extends Canvas {
 	protected int plX;
 	protected int height;
 	protected int width;
+	protected boardLogic logic; 
 	
 	public static final Color LIGHTyellow = new Color(255, 255, 153);
 	
@@ -22,6 +23,7 @@ public class scoreCanvas extends Canvas {
 		this.plX = 390;
 		this.height = 50;
 		this.width = 496;
+		this.logic = scrabble.logic; 
 	}
 	
 	public void paint(Graphics g) {
@@ -35,12 +37,12 @@ public class scoreCanvas extends Canvas {
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(p1X + 47, height-33, 22, 18, 5, 5);
 		g.setColor(Color.BLACK);
-		g.drawString("Player 1      0", p1X, height-20);
+		g.drawString("Player 1      "+String.valueOf(logic.p1score), p1X, height-20);
 		g.drawRoundRect(cmpX + 58, height-33, 22, 18, 5, 5);
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(cmpX + 58, height-33, 22, 18, 5, 5);
 		g.setColor(Color.BLACK);
-		g.drawString("Computer      0", cmpX, height-20);
+		g.drawString("Computer      "+String.valueOf(logic.cmpScore), cmpX, height-20);
 		g.drawRoundRect(cwsX + 100, height-33, 22, 18, 5, 5);
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(cwsX + 100, height-33, 22, 18, 5, 5);
@@ -55,8 +57,3 @@ public class scoreCanvas extends Canvas {
 	}
 
 }
-
-
-
-
-
