@@ -12,30 +12,17 @@ class playerTileCanvas extends Canvas implements MouseListener {
 	boolean submitClicked; 
 	protected boardLogic logic;
 
-	public playerTileCanvas() {
-		this.logic = scrabble.logic;
+	public playerTileCanvas(boardLogic logic) {
+		this.logic = logic;
 		this.size = 62;
 		submitClicked = false; 
 	}
 
-	public static Hashtable<String, Integer> initHash() {
-		Hashtable<String, Integer> tiles = new Hashtable<String, Integer>(); 
-		tiles.put("A", 1); 
-		tiles.put("B", 2); 
-		tiles.put("C", 3); 
-		tiles.put("D", 2); 
-		tiles.put("E", 1); 
-		tiles.put("F", 4); 
-		tiles.put("G", 2); 
-		return tiles; 
-	}
 	
 	public static final Color GREEN = new Color(0, 180, 0);
 	public static final Color DARKgreen = new Color(0, 102, 0);
 	
 	public void paint(Graphics g) {
-		Hashtable<String, Integer> tiles = initHash(); 
-		Object[] letters = tiles.keySet().toArray();
 		for (int i=0;i<7;i++) {	
 			int x = size*i;
 			g.setColor(Color.black);
@@ -48,9 +35,11 @@ class playerTileCanvas extends Canvas implements MouseListener {
 			g.fillRoundRect(x, 0, size, size, 10, 10);
 			g.setColor(Color.black);
 			g.setFont(new Font("Arial", Font.BOLD, 20));
-			g.drawString(String.valueOf(letters[i]), x + 25, 40);
+			g.drawString(logic.p1tiles[i].letterVal, x + 25, 40);
 			g.setFont(new Font("Arial", Font.PLAIN, 9));
-			g.drawString(String.valueOf(tiles.get(letters[i])), x + 55, 10);
+			g.drawString(String.valueOf(logic.p1tiles[i].numVal), x + 55, 10);
+			//System.out.println(logic.p1tiles);
+			//System.out.println(logic.p1tiles2);
 		}
 		g.drawRoundRect((7*size),0, size, size, 10, 10);
 		if(submitClicked)
@@ -72,13 +61,11 @@ class playerTileCanvas extends Canvas implements MouseListener {
 			int tileIndex = x/size;
 			//System.out.println("selectTile("+tileIndex+")");
 			clicked[tileIndex] = true; 
-    			repaint(); 
+			repaint(); 
     			logic.selectTile(tileIndex);
-    			repaint(); 
 		} else if (x>=(7*size) && x<(8*size) && y >= 0 && y<size) {
 			System.out.println("submitMove()");
-			submitClicked = true; 
-			repaint();
+			submitClicked = true;
 			logic.submitCurrentWord();
 			repaint(); 
 		}
@@ -99,3 +86,7 @@ class playerTileCanvas extends Canvas implements MouseListener {
     public void mouseExited(MouseEvent event) { }
 
 }
+
+
+
+
