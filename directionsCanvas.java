@@ -16,7 +16,7 @@ class directionsCanvas extends Canvas implements MouseListener {
 	protected boardLogic logic; 
 	
 
-	public directionsCanvas() {
+	public directionsCanvas(boardLogic logic) {
 //		this.logic = logic;
 		this.directionsX = 3;
 		this.shuffleX = 270;
@@ -25,7 +25,7 @@ class directionsCanvas extends Canvas implements MouseListener {
 		shuffleClicked = false; 
 		skipClicked = false; 
 		exchangeClicked = false; 
-		this.logic = scrabble.logic;
+		this.logic = logic; 
 	}
 
 	public static final Color LIGHTblue = new Color(0, 204, 255);
@@ -76,7 +76,7 @@ class directionsCanvas extends Canvas implements MouseListener {
 		Point p = event.getPoint();
 		if (p.x>=directionsX && p.x<shuffleX && p.y>=0 && p.y<100) {
 			//System.out.println("logic.play()");
-			if (logic.gameInProgress = false)
+			if (logic.gameInProgress == false)
 				logic.play();
 		} else if (p.x>=shuffleX && p.x<skipX && p.y>=0 && p.y<100) {
 			System.out.println("logic.shuffle()");
