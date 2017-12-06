@@ -24,7 +24,7 @@ public class boardLogic {
 	protected tile selectedTile;
 	protected word currentWord;
 
-	public Vector bag;
+	public String[] bag;
 
 	public int p1score;
 	public int p2score;
@@ -38,13 +38,16 @@ public class boardLogic {
 	public boardLogic(scrabble display) {
 		board = new tile[225];
 		populateBoard();
+		
+		bag = new String[100]; 
+		bag = newBag(); 
 		p1tiles = new tile[7];
 		setP1tiles();
 
 		selectedTileIndex = -1;
 		
 		strDir = "Welcome to Scrabble. Click this text to start a new game.";
-		p1turn = false;
+		p1turn = true;
 		gameInProgress = false;
 		wordStarted = false;
 
@@ -52,9 +55,7 @@ public class boardLogic {
 		
 		selectedTile = new tile();
 		currentWord = new word();
-
-		bag = new Vector();
-
+		
 		p1score = 0;
 		p2score = 0;
 
@@ -71,13 +72,13 @@ public class boardLogic {
 		}
 	}
 
-
+	/*
 	public void setP1tiles() {
 		String letters[] = {"A","B","C","D","E","F","G"};
 		for (int i=0;i<letters.length;i++) {
 			p1tiles[i] = new tile(letters[i]);
 		}
-	}
+	}*/
 
 	public boolean isWinner() {
 		/*
@@ -375,6 +376,105 @@ public class boardLogic {
 	public void undoPlacement() {
 	}
 
+	public int randomNum(int min, int max){
+		   int range = (max - min) + 1;     
+		   return (int)(Math.random() * range) + min;
+		}
+		
+	public void setP1tiles() {
+		for(int i = 0; i < 7; i ++) {
+			int randIndex = randomNum(0, 99); 
+			while(bag[randIndex] == "null") {
+				randIndex = randomNum(0, 99); 
+			}
+			//System.out.print(bag[randIndex]);
+			p1tiles[i] =  new tile(bag[randIndex]);
+			if(randIndex >= 0 && randIndex <= 67)
+				p1tiles[i].numVal = 1; 
+			else if(randIndex >= 68 && randIndex <= 74)
+				p1tiles[i].numVal = 2; 
+			else if(randIndex >= 75 && randIndex <= 82)
+				p1tiles[i].numVal = 3;
+			else if(randIndex >= 83 && randIndex <= 92)
+				p1tiles[i].numVal = 4;
+			else if(randIndex == 93)
+				p1tiles[i].numVal = 5;
+			else if(randIndex >= 94 && randIndex <= 95)
+				p1tiles[i].numVal = 8;
+			else if(randIndex >= 96 && randIndex <= 97)
+				p1tiles[i].numVal = 10;
+			else
+				p1tiles[i].numVal = 0;
+			bag[randIndex] = "null"; //signifies the piece at that index has been draw, to preserve indices */
+		}
+	}
+
+	public String [] newBag() {
+		for(int i = 0; i < 12; i++)
+			bag[i] = "E"; 
+		for(int i = 12; i < 21; i++)
+			bag[i] = "A"; 
+		for(int i = 21; i < 30; i++)
+			bag[i] = "I"; 
+		for(int i = 30; i < 38; i++)
+			bag[i] = "O"; 
+		for(int i = 38; i < 44; i++)
+			bag[i] = "N"; 
+		for(int i = 44; i < 50; i++)
+			bag[i] = "R"; 
+		for(int i = 50; i < 56; i++)
+			bag[i] = "T"; 
+		for(int i = 56; i < 60; i++)
+			bag[i] = "L";
+		for(int i = 60; i < 64; i++)
+			bag[i] = "S"; 
+		for(int i = 64; i < 68; i++)
+			bag[i] = "U";
+		//indices 0 through 67 are worth 1 point 
+		for(int i = 68; i < 72; i++)
+			bag[i] = "D";
+		for(int i = 72; i < 75; i++)
+			bag[i] = "G"; 
+		//indices 68 through 74 are worth 2 points 
+		for(int i = 75; i < 77; i++)
+			bag[i] = "B"; 
+		for(int i = 77; i < 79; i++)
+			bag[i] = "C"; 
+		for(int i = 79; i < 81; i++)
+			bag[i] = "M"; 
+		for(int i = 81; i < 83; i++)
+			bag[i] = "P"; 
+		//indices 74 through 82 are worth 3 points 
+		for(int i = 83; i < 85; i++)
+			bag[i] = "F"; 
+		for(int i = 85; i < 87; i++)
+			bag[i] = "H"; 
+		for(int i = 87; i < 89; i++)
+			bag[i] = "V"; 
+		for(int i = 89; i < 91; i++)
+			bag[i] = "W"; 
+		for(int i = 91; i < 93; i++)
+			bag[i] = "Y"; 
+		//indices 83 through 92 are worth 4 points 
+		for(int i = 93; i < 94; i++)
+			bag[i] = "K"; 
+		//index 93 (K) is worth 5 points 
+		for(int i = 94; i < 95; i++)
+			bag[i] = "J"; 
+		for(int i = 95; i < 96; i++)
+			bag[i] = "X"; 
+		//indices 94 and 95 are worth 8 points 
+		for(int i = 96; i < 97; i++)
+			bag[i] = "Q";
+		for(int i = 97; i < 98; i++)
+			bag[i] = "Z"; 
+		//indices 96 and 97 are worth 10 
+		for(int i = 98; i < 100; i++)
+			bag[i] = " "; 
+		//indices 98 and 99 are BLANK, worth 0 
+		return bag; 
+		}
+
 
 
 	//resetTurn()
@@ -382,27 +482,4 @@ public class boardLogic {
 	//undoPlacement()
 	//
 	//
-
-
-
-
-
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
 }
