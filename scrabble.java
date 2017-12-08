@@ -18,15 +18,13 @@ public class scrabble extends Applet {
 		setFont(new Font("TimesRoman", Font.BOLD, 12));
 		setSize(496,660);
 
-
-
 		//init a new logic object
 		logic = new boardLogic(this);
 
-		
 		display = new scrabbleCanvas(logic);
 
 		display.addMouseListener(display);
+		display.addKeyListener(display);
 		
 		setLayout(new BorderLayout());
 		add("Center", display);
