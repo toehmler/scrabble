@@ -19,6 +19,7 @@ public class boardLogic {
 	//board tiles, player tiles and bagStr tiles
 	protected tile[] board;
 	protected tile[] p1tiles;
+	protected tile[] p2tiles;
 	protected Stack<tile> bag;
 
 	//store directions and scores to display
@@ -28,6 +29,7 @@ public class boardLogic {
 
 	//track state of turn and game
 	protected boolean p1turn;
+	protected boolean p2turn;
 	protected boolean gameInProgress;
 	protected boolean wordStarted;
 	protected boolean currentIntersects;
@@ -53,15 +55,18 @@ public class boardLogic {
 		bag = new Stack<tile>();
 		board = new tile[225];
 		p1tiles = new tile[7];
+		p2tiles = new tile[7];
 		fillBag();
 		populateBoard();
 		setP1tiles();
+		setP2tiles();
 
-		strDir = "Welcome to Scrabble. Click this text to start a new game.";
+		strDir = "Welcome to scrabble. Press here to start a new game.";
 		p1score = 0;
 		p2score = 0;
 
 		p1turn = false;
+		p2turn = false;
 		gameInProgress = false;
 		wordStarted = false;
 		currentIntersects = false;
@@ -107,7 +112,22 @@ public class boardLogic {
 		else
 			return false;
 			*/
-		return false;
+		if (bag.isEmpty()) {
+			if (p1score > p2score) {
+				strDir = "Player 1 won. Press to play again.";
+			} else {
+				strDir = "Player 2 has won. Press to play again.";
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void endGame() {
+		p1turn = false;
+		p2turn = false;
+		gameInProgress = false;
 	}
 
 	public void play() {
@@ -123,27 +143,35 @@ public class boardLogic {
 		*/
 		//
 		//strDir = "The game is over";
-		strDir = "Please select a tile.";
+		strDir = "Please select a tile;";
 		gameInProgress = true;
 		p1turn = true;
 
 	}
 
 	public void selectTile(int index) {
-		if (p1turn) {
+		if (p1turn || p2turn) {
 			selectedTileIndex = index;
-			if(isSelectedBlank(p1tiles[selectedTileIndex]))
-				strDir = "Please select a letter for your blank tile."; 
-			else
-				strDir = "You have choosen '"+ p1tiles[selectedTileIndex].letterVal+"' select a location.";
+			if (p1turn) {
+				if(isSelectedBlank(p1tiles[selectedTileIndex]))
+					strDir = "Please select a letter for your blank tile."; 
+				else
+					strDir = "You have choosen '"+ p1tiles[selectedTileIndex].letterVal+"' select a location.";
+			} else {
+				if(isSelectedBlank(p2tiles[selectedTileIndex]))
+					strDir = "Please select a letter for your blank tile."; 
+				else
+					strDir = "You have choosen '"+ p2tiles[selectedTileIndex].letterVal+"' select a location.";
+			}
+
 		} else {
-			strDir = "It is not your turn.";
+			strDir = "There is no game in progress, press here to start a new game.";
 		}
 	}
 
 	public void placeTile(int index) {
 		//called when a tile on the board is pressed
-		if (p1turn) {
+		if (gameInProgress) {
 			if (isValidLocation(index)) {
 				addToBoard(index, selectedTileIndex);
 				strDir = "Select another tile or your submit move.";
@@ -169,6 +197,7 @@ public class boardLogic {
 			if (index1-index2 < 15) {
 				return true;
 			} else {
+
 				return false;
 			}
 		} else {
@@ -186,15 +215,19 @@ public class boardLogic {
 			for (int i=index2+1;i<index1;i++) {
 				if (board[i].isEmpty())
 					return false;
-				else 
+				else {
+					currentWord.intersects.add(i);
 					currentIntersects = true;
+				}
 			} 
 		} else {
 			for (int i=index1+1;i<index2;i++) {
 				if (board[i].isEmpty())
 					return false;
-				else 
+				else { 
+					currentWord.intersects.add(i);
 					currentIntersects = true;
+				}
 			}
 		} return true;
 	}
@@ -207,15 +240,19 @@ public class boardLogic {
 			for (int i=(index2+15);i<index1;i+=15) {
 				if (board[i].isEmpty())
 					return false;
-				else 
+				else {
+				   	currentWord.intersects.add(i);	
 					currentIntersects = true;
+				}
 			}
 		} else {
 			for (int i=(index1+15);i<index2;i+=15) {
 				if (board[i].isEmpty())
 					return false;
-				else 
+				else {
+				   	currentWord.intersects.add(i);	
 					currentIntersects = true;
+				}
 			}
 		} return true;
 	}
@@ -232,6 +269,20 @@ public class boardLogic {
 				if (inSameCol(currentWord.endIndex,index)) {
 					if (tilesFilledVert(currentWord.endIndex, index)) {
 						currentWord.orientation = 1;
+						if (board[currentWord.startIndex-15].hasVal()) {
+							currentIntersects = true;
+							while (board[currentWord.startIndex-15].hasVal()) {
+								currentWord.startIndex -= 15;
+								currentWord.intersects.add(currentWord.startIndex);
+							}
+						} else if (board[currentWord.endIndex+15].hasVal()) {
+							currentIntersects = true;
+							while (board[currentWord.endIndex+15].hasVal()) {
+								currentWord.endIndex += 15;
+								currentWord.intersects.add(currentWord.endIndex);
+							}
+
+						}
 						return true;
 					} else {
 						return false;
@@ -239,6 +290,19 @@ public class boardLogic {
 				} else if (inSameRow(currentWord.endIndex, index)) {
 					if (tilesFilledHoriz(currentWord.endIndex, index)) {
 						currentWord.orientation = 2;
+						if (board[currentWord.startIndex-1].hasVal()) {
+							currentIntersects = true;
+							while (board[currentWord.startIndex-1].hasVal()) {
+								currentWord.startIndex --;
+								currentWord.intersects.add(currentWord.startIndex);
+							}
+
+						} else if (board[currentWord.endIndex+1].hasVal()) {
+							while (board[currentWord.endIndex+1].hasVal()) {
+								currentWord.endIndex ++;
+								currentWord.intersects.add(currentWord.endIndex);
+							}
+						}
 						return true;
 					} else 
 
@@ -260,12 +324,10 @@ public class boardLogic {
 						return false;
 					}
 				} else {
-					System.out.println("in samerow false");
 					return false;
 				}
 			}
-		} else if (checkForAdjacent(index))
-		   return true;
+		} 
 		return true;
 	}
 
@@ -274,7 +336,6 @@ public class boardLogic {
 			wordStarted = true;
 			int start = index;
 			int end = index;
-			System.out.println("before while 1");
 			while (board[end+15].hasVal())
 				end+=15;
 			while (board[start-15].hasVal())
@@ -282,13 +343,11 @@ public class boardLogic {
 			currentWord.startIndex = start;
 			currentWord.endIndex = end;
 			currentWord.orientation = 1;
-			currentIntersects = true;
 			return true;
 		} else if (board[index+1].hasVal() || board[index-1].hasVal()) {
 			wordStarted = true;
 			int start = index;
 			int end = index;
-			System.out.println("before while 2");
 			while (board[start-1].hasVal())
 				start --;
 			while (board[end+1].hasVal())
@@ -296,7 +355,6 @@ public class boardLogic {
 			currentWord.startIndex = start;
 			currentWord.endIndex = end;
 			currentWord.orientation = 2;
-			currentIntersects = true;;
 			return true;
 		} else 
 			return false;
@@ -304,8 +362,14 @@ public class boardLogic {
 
 	protected void setBoardTile(int index, int playerTileIndex) {
 		//maintains the multiplier value of each tile on the board
-		board[index].letterVal = p1tiles[playerTileIndex].letterVal;
-		board[index].numVal = p1tiles[playerTileIndex].numVal;
+		if(p1turn) {
+			board[index].letterVal = p1tiles[playerTileIndex].letterVal;
+			board[index].numVal = p1tiles[playerTileIndex].numVal;
+		} else {
+			board[index].letterVal = p2tiles[playerTileIndex].letterVal;
+			board[index].numVal = p2tiles[playerTileIndex].numVal;
+		}
+
 	}
 	
 	protected void addToBoard(int index, int playerTileIndex) {
@@ -318,19 +382,19 @@ public class boardLogic {
 			//add way to keep track of indicies where tiles were placed
 			//in case the word is not valid
 		} else {		
-			if (checkForAdjacent(index) == false) {
-				if (index>currentWord.endIndex) 
-					currentWord.endIndex = index;
-				else  
-					currentWord.startIndex = index;
+			if (index>currentWord.endIndex) 
+				currentWord.endIndex = index;
+			else  
+				currentWord.startIndex = index;
 			}
 			setBoardTile(index, playerTileIndex);
-		}
-
 		//keep track of what playerTileIndex was placed
 		placedTileIndices[playerTileIndex] = index;
 		//reset that playerTile to be a blank tile (remove it)
-		p1tiles[playerTileIndex] = new tile();
+		if (p1turn) 
+			p1tiles[playerTileIndex] = new tile();
+		else 
+			p2tiles[playerTileIndex] = new tile();
 	}
 
 	protected String wordToString(word w) {
@@ -365,11 +429,11 @@ public class boardLogic {
 	
 	protected boolean wordisValid(word W) throws IOException {
 		//checks whether the current word is in the dictionary
+		//
 		//returns true if word can be found in the array of strings
 		String [] dict  = parseDict(); 
 		String wordStr = wordToString(W);
 		return Arrays.asList(dict).contains(wordStr); 
-		//add a loop for something to check if the word is actually in the dict
 	}
 	
 	protected boolean scoreCrossWords() throws IOException {
@@ -378,36 +442,46 @@ public class boardLogic {
 			increment = 15;
 		for (int i=currentWord.startIndex;i<=currentWord.endIndex;i+=increment) { //possible
 			if (currentWord.orientation == 1) {
-				if (board[i-1].hasVal() || board[i+1].hasVal()) {
-					currentIntersects = true;
-					int start = i;
-					int end = i;
-					while (board[start-1].hasVal()) 
-						start --;
-					while (board[end+1].hasVal())
-						end --;
-					word crossWord = new word(start, end, 2);
-					if (wordisValid(crossWord)) {
-						wordsPlayed.add(crossWord);
-						p1score += scoreWord(crossWord);
-					} else 
-						return false;
+				if (currentWord.intersects.contains(i) == false) {
+					if (board[i-1].hasVal() && board[i+1].hasVal()) {
+						currentIntersects = true;
+						int start = i;
+						int end = i;
+						while (board[start-1].hasVal()) 
+							start --;
+						while (board[end+1].hasVal())
+							end --;
+						word crossWord = new word(start, end, 2);
+						if (wordisValid(crossWord)) {
+							wordsPlayed.add(crossWord);
+							if (p1turn) 
+								p1score += scoreWord(crossWord);
+							else 
+								p2score += scoreWord(crossWord);
+						} else 
+							return false;
+					}
 				} 
 			} else {
-				if (board[i-15].hasVal() || board[i+15].hasVal()) {
-					currentIntersects = true;
-					int start = i;
-					int end = i;
-					while (board[start-15].hasVal())
-						start -= 15;
-					while (board[start+15].hasVal()) 
-						end += 15;
-					word crossWord = new word(start, end, 1);
-					if (wordisValid(crossWord)) {
-						wordsPlayed.add(crossWord);
-						p1score += scoreWord(crossWord);
-					} else 
-						return false;
+				if (currentWord.intersects.contains(i) == false) {
+					if (board[i-15].hasVal() && board[i+15].hasVal()) {
+						currentIntersects = true;
+						int start = i;
+						int end = i;
+						while (board[start-15].hasVal())
+							start -= 15;
+						while (board[start+15].hasVal()) 
+							end += 15;
+						word crossWord = new word(start, end, 1);
+						if (wordisValid(crossWord)) {
+							wordsPlayed.add(crossWord);
+							if (p1turn)
+								p1score += scoreWord(crossWord);
+							else 
+								p2score += scoreWord(crossWord);
+						} else 
+							return false;
+					}
 				}
 			}
 		} 
@@ -429,20 +503,68 @@ public class boardLogic {
 
 	protected void submitCurrentWord() throws IOException {
 		//called when the submit button is called
-		if (wordisValid(currentWord)) {
+		if (currentWord.startIndex == currentWord.endIndex) {
+			if (checkForAdjacent(currentWord.startIndex)){
+
+				//possibly add a check for crosswords too
+				int wordScore = scoreWord(currentWord);
+				if (p1turn) {
+					p1score += wordScore;
+					strDir = "Player 1 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+				} else {
+					p2score += wordScore;
+					strDir = "Player 2 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+				wordsPlayed.add(currentWord);
+				changeTurn();
+				}
+			} else {
+				resetPlayerTiles();
+				strDir = "The word you submitted was not valid. Try again.";
+			}
+
+		} else if (wordisValid(currentWord)) {
 				System.out.println("here");
 			if (wordsPlayed.isEmpty()) {
 				int wordScore = scoreWord(currentWord);
-				p1score += wordScore;
+				if (p1turn) {
+					p1score += wordScore;
+					strDir = "player 1 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+				} else {
+					p2score += wordScore;
+					strDir = "player 2 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+				}
 				wordsPlayed.add(currentWord);
-				strDir = "You played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
 				changeTurn();
-			} else if (currentIntersects  && scoreCrossWords()) {
+			} else if (currentIntersects && scoreCrossWords())  {
 				int wordScore = scoreWord(currentWord);
-				p1score += wordScore;
+				if (p1turn) {
+					p1score += wordScore;
+					strDir = "player 1 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+				} else {
+					p2score += wordScore;
+					strDir = "player 2 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+				}
 				wordsPlayed.add(currentWord);
-				strDir = "You played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
 				changeTurn();
+			} else if (currentIntersects == false && board[currentWord.endIndex+1].hasVal()) {
+				while (board[currentWord.endIndex+1].hasVal()){
+					currentWord.endIndex ++;
+					currentWord.intersects.add(currentWord.endIndex);
+				}
+				System.out.println("test");
+				if (scoreCrossWords()) {
+					int wordScore = scoreWord(currentWord);
+					if (p1turn) {
+						p1score += wordScore;
+						strDir = "player 1 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+
+					} else {
+						p2score += wordScore;
+						strDir = "player 2 played  '"+wordToString(currentWord)+"'  for "+wordScore+" points.";
+					}
+					wordsPlayed.add(currentWord);
+					changeTurn();
+				}
 			} else {
 				resetPlayerTiles();
 				strDir = "The word you submitted was not valid. Try again.";
@@ -458,7 +580,10 @@ public class boardLogic {
 		for (int i=0;i<7;i++) {
 			int boardIndex = placedTileIndices[i];
 			if (boardIndex >= 0) {
-				p1tiles[i] = board[boardIndex];
+				if (p1turn) 
+					p1tiles[i] = board[boardIndex];
+				else 
+					p2tiles[i] = board[boardIndex];
 				board[boardIndex] = new tile();
 			}
 		}
@@ -467,8 +592,12 @@ public class boardLogic {
 
 	protected void getNewPlayerTiles() {
 		for (int i=0;i<7;i++) {
-			if (placedTileIndices[i] >= 0)
-				p1tiles[i] = bag.pop();
+			if (placedTileIndices[i] >= 0) {
+				if (p1turn)
+					p1tiles[i] = bag.pop();
+				else
+					p2tiles[i] = bag.pop();
+			}
 		}
 	}
 
@@ -478,13 +607,19 @@ public class boardLogic {
 		currentWord = new word();
 		initPlacedTileIndices();
 		selectedTileIndex = -1;
+		currentWord.intersects.removeAllElements();
 	}
 
 	public void changeTurn() {
 		getNewPlayerTiles();
 		resetCurrentWord();
-		p1turn = false;
-		ai.makeMove();
+		if (p1turn) {
+			p1turn = false;
+			p2turn = true;
+		} else {
+			p1turn = true;
+			p2turn = false;
+		}
 	}
 
 
@@ -531,18 +666,12 @@ public class boardLogic {
 	public void setP1tiles() {
 		for(int i = 0; i < 7; i ++) {
 			p1tiles[i] = bag.pop();
-			//deprecated version below
-			/*
-			int randIndex = randomNum(0, 99); 
-			while(bagStr[randIndex] == "null") {
-				randIndex = randomNum(0, 99); 
-			}
-			//System.out.print(bagStr[randIndex]);
-			p1tiles[i] =  new tile(bagStr[randIndex]);
-			p1tile[i] = bag.get
-			p1tiles[i].numVal = getTileValue(randIndex);
-			bagStr[randIndex] = "null"; //signifies the piece at that index has been draw, to preserve indices */
-			
+		}
+	}
+
+	public void setP2tiles() {
+		for (int i=0;i<7;i++) {
+			p2tiles[i] = bag.pop();
 		}
 	}
 
@@ -640,13 +769,15 @@ public class boardLogic {
 	
 	public void skip() {
 		//method for player to skip turn 
-		strDir = "You skipped your turn."; 
 		if(p1turn) {
-			p1turn = false;
-			//AI.makeMove(); 
+			strDir = "Player 1 skipped their turn. It's not player 2's turn.";
+			resetPlayerTiles();
+			changeTurn();
 		}else {
-			//AI.makeMove(); 
-			return; 
+			strDir = "Player 2 skipped their turn. It's now player 1's turn.";
+			resetPlayerTiles();
+			changeTurn();
+
 		}
 	}
 
@@ -657,11 +788,19 @@ public class boardLogic {
 		for(int i=0;i < 7;i++) {
 			newPlayerTiles[i] = bag.pop(); 
 		}
-		for(tile playerTile : p1tiles) {
-			bag.push(playerTile);
+		if (p1turn) {
+			for(tile playerTile : p1tiles) {
+				bag.push(playerTile);
+			}
+			p1tiles = newPlayerTiles;
+			changeTurn();
+		} else {
+			for (tile playerTile : p2tiles) {
+				bag.push(playerTile);
+			}
+			p1tiles = newPlayerTiles;
+			changeTurn();
 		}
-		p1tiles = newPlayerTiles; 
-		p1turn = false; 
 	}
 	
 	//resetTurn()

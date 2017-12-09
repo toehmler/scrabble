@@ -8,7 +8,7 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 
 	protected int scoreX;
 	protected int p1X;
-	protected int cmpX;
+	protected int p2X;
 	protected int cwsX;
 	protected int plX;
 	protected int scoreHeight;
@@ -50,7 +50,7 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 	public scrabbleCanvas(boardLogic logic) {
 		this.scoreX = 15;
 		this.p1X = 70;
-		this.cmpX = 150;
+		this.p2X = 150;
 		this.cwsX = 240;
 		this.plX = 390;
 		this.scoreHeight = 50;
@@ -90,13 +90,21 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 		g.drawRoundRect(p1X + 47, scoreHeight-33, 22, 18, 5, 5);
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(p1X + 47, scoreHeight-33, 22, 18, 5, 5);
-		g.setColor(Color.BLACK);
+		if (logic.p1turn)
+			g.setColor(LIGHTred);
+		else 
+			g.setColor(Color.BLACK);
 		g.drawString("Player 1      "+String.valueOf(logic.p1score), p1X, scoreHeight-20);
-		g.drawRoundRect(cmpX + 58, scoreHeight-33, 22, 18, 5, 5);
-		g.setColor(Color.WHITE);
-		g.fillRoundRect(cmpX + 58, scoreHeight-33, 22, 18, 5, 5);
 		g.setColor(Color.BLACK);
-		g.drawString("Computer      "+String.valueOf(logic.p2score), cmpX, scoreHeight-20);
+		g.drawRoundRect(p2X + 58, scoreHeight-33, 22, 18, 5, 5);
+		g.setColor(Color.WHITE);
+		g.fillRoundRect(p2X + 58, scoreHeight-33, 22, 18, 5, 5);
+		if (logic.p2turn)
+			g.setColor(LIGHTred);
+		else
+			g.setColor(Color.BLACK);
+		g.drawString("Player 2      "+String.valueOf(logic.p2score), p2X+10, scoreHeight-20);
+		g.setColor(Color.BLACK);
 		g.drawRoundRect(cwsX + 100, scoreHeight-33, 22, 18, 5, 5);
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(cwsX + 100, scoreHeight-33, 22, 18, 5, 5);
@@ -187,10 +195,18 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 			}
 			g.fillRoundRect(x, scoreHeight+boardHeight+directionsHeight+3, playerTileSize, playerTileSize, 10, 10);
 			g.setColor(Color.black);
-			g.setFont(new Font("Arial", Font.BOLD, 20));
-			g.drawString(logic.p1tiles[i].letterVal, x + 25, 40+scoreHeight+boardHeight+directionsHeight);
-			g.setFont(new Font("Arial", Font.PLAIN, 9));
-			g.drawString(String.valueOf(logic.p1tiles[i].numVal), x + 52, 12+scoreHeight+boardHeight+directionsHeight);
+			if (logic.p1turn) {
+				g.setFont(new Font("Arial", Font.BOLD, 20));
+				g.drawString(logic.p1tiles[i].letterVal, x + 25, 40+scoreHeight+boardHeight+directionsHeight);
+				g.setFont(new Font("Arial", Font.PLAIN, 9));
+				g.drawString(String.valueOf(logic.p1tiles[i].numVal), x + 52, 12+scoreHeight+boardHeight+directionsHeight);
+			} else {
+				g.setFont(new Font("Arial", Font.BOLD, 20));
+				g.drawString(logic.p2tiles[i].letterVal, x + 25, 40+scoreHeight+boardHeight+directionsHeight);
+				g.setFont(new Font("Arial", Font.PLAIN, 9));
+				g.drawString(String.valueOf(logic.p2tiles[i].numVal), x + 52, 12+scoreHeight+boardHeight+directionsHeight);
+			
+			}
 		}
 		g.drawRoundRect((7*playerTileSize),scoreHeight+boardHeight+directionsHeight+3, playerTileSize, playerTileSize, 10, 10);
 		if(submitClicked)
@@ -243,7 +259,7 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 				repaint();
 			}else if (p.x>=undoX && p.x<496 && y>=0 && y<directionsHeight) {
 				undoClicked = true; 
-				System.out.println("logic.undo()");
+			//	logic.undo();
 				repaint();
 			}
 		} else {
@@ -259,7 +275,6 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 				logic.selectTile(tileIndex);
 				repaint();
 			} else if (x>=(7*playerTileSize) && x<(8*playerTileSize) && y >= 0 && y<playerTileSize) {
-				System.out.println("submitMove()");
 				submitClicked = true; 
 				try {
 					logic.submitCurrentWord();
@@ -290,13 +305,20 @@ public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener
 
 	public void keyPressed(KeyEvent event) {
 		String letter = String.valueOf(event.getKeyChar()).toUpperCase(); 
-		if(logic.isSelectedBlank(logic.p1tiles[logic.selectedTileIndex])) { 
-			logic.p1tiles[logic.selectedTileIndex].letterVal = letter; 
-			logic.strDir = "You have selected "+letter+" for your blank tile."; 
-			repaint(); 
-		}else {
-			return;
+		if (logic.p1turn) {
+			if(logic.isSelectedBlank(logic.p2tiles[logic.selectedTileIndex])) { 
+				logic.p1tiles[logic.selectedTileIndex].letterVal = letter; 
+				logic.strDir = "You have selected "+letter+" for your blank tile."; 
+				repaint(); 
+			}
+		} else {
+			if(logic.isSelectedBlank(logic.p2tiles[logic.selectedTileIndex])) { 
+				logic.p2tiles[logic.selectedTileIndex].letterVal = letter; 
+				logic.strDir = "You have selected "+letter+" for your blank tile."; 
+				repaint(); 
+			}
 		}
+
 	}
 	
 	public void keyTyped(KeyEvent e) {}
