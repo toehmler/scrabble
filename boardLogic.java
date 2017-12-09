@@ -1,6 +1,11 @@
 //boardLogic.java
 import java.lang.*;
 import java.awt.*;
+import java.awt.List;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 import structure.Vector;
 import java.util.*;
 
@@ -34,13 +39,10 @@ public class boardLogic {
 
 	//placedTileIndices[0] = board index loc of the first playerTile
 
-
 	//track what words have been played (as strings)
 	public Vector wordsPlayed;
 
 	protected String[] dictionary = {"ABCD"};
-
-
 	
 	public boardLogic(scrabble display) {
 
@@ -130,7 +132,10 @@ public class boardLogic {
 	public void selectTile(int index) {
 		if (p1turn) {
 			selectedTileIndex = index;
-			strDir = "You have choosen '"+ p1tiles[selectedTileIndex].letterVal+"' select a location.";
+			if(isSelectedBlank(p1tiles[selectedTileIndex]))
+				strDir = "Please select a letter for your blank tile."; 
+			else
+				strDir = "You have choosen '"+ p1tiles[selectedTileIndex].letterVal+"' select a location.";
 		} else {
 			strDir = "It is not your turn.";
 		}
@@ -344,23 +349,34 @@ public class boardLogic {
 		} else {
 			wordStr = board[w.startIndex].letterVal;
 		}
-		return wordStr.toLowerCase();
+		return wordStr.toUpperCase();
 	}
 
-	protected boolean wordisValid(word W) {
-		//checks whether the current word is in the dictionary
-		//returns true if word can be found in the array of strings
-		String wordStr = wordToString(currentWord);
-		//add a loop for something to check if the word is actually in the dict
-
-		return true; //placeholder
+	public static String [] parseDict() throws IOException {
+		BufferedReader file = new BufferedReader(new FileReader("scrabbleDict.txt"));
+		String word;
+		ArrayList<String> list = new ArrayList<String>();
+		while((word = file.readLine()) != null){
+		    list.add(word);
+		}
+		String[] stringArr = list.toArray(new String[0]);
+		return stringArr; 
 	}
 	
-	protected boolean scoreCrossWords() {
+	protected boolean wordisValid(word W) throws IOException {
+		//checks whether the current word is in the dictionary
+		//returns true if word can be found in the array of strings
+		String [] dict  = parseDict(); 
+		String wordStr = wordToString(W);
+		return Arrays.asList(dict).contains(wordStr); 
+		//add a loop for something to check if the word is actually in the dict
+	}
+	
+	protected boolean scoreCrossWords() throws IOException {
 		int increment = 1;
 		if (currentWord.orientation == 1) 
 			increment = 15;
-		for (int i=currentWord.startIndex;i<=currentWord.endIndex;i+=increment) {
+		for (int i=currentWord.startIndex;i<=currentWord.endIndex;i+=increment) { //possible
 			if (currentWord.orientation == 1) {
 				if (board[i-1].hasVal() || board[i+1].hasVal()) {
 					currentIntersects = true;
@@ -392,7 +408,6 @@ public class boardLogic {
 						p1score += scoreWord(crossWord);
 					} else 
 						return false;
-
 				}
 			}
 		} 
@@ -412,10 +427,9 @@ public class boardLogic {
 		return score;
 	}
 
-	protected void submitCurrentWord() {
+	protected void submitCurrentWord() throws IOException {
 		//called when the submit button is called
 		if (wordisValid(currentWord)) {
-
 				System.out.println("here");
 			if (wordsPlayed.isEmpty()) {
 				int wordScore = scoreWord(currentWord);
@@ -458,8 +472,6 @@ public class boardLogic {
 		}
 	}
 
-
-	
 	public void resetCurrentWord() {
 		wordStarted = false;
 		currentIntersects = false;
@@ -489,10 +501,8 @@ public class boardLogic {
 			//
 		}	
 		*/
-
 	}
 	
-
 	public int randomNum(int min, int max){
 		   int range = (max - min) + 1;     
 		   return (int)(Math.random() * range) + min;
@@ -513,7 +523,8 @@ public class boardLogic {
 			return 8;
 		else if(index >= 96 && index <= 97) 
 			return 10;
-		return 0;
+		else 
+			return 0;
 		
 	}
 		
@@ -600,33 +611,62 @@ public class boardLogic {
 			bagStr[i] = " "; 
 		//indices 98 and 99 are BLANK, worth 0 
 		return bagStr; 
+	}
+	
+	public boolean isSelectedBlank(tile Tile) {
+		//method to deal with setting blank tile value
+		if(Tile.letterVal == " ") {
+			return true; 
+		}else {
+			return false; 
 		}
+	}
+	
+	public void shuffle(tile[] playerTiles) {
+		//method to shuffle player's pieces
+        tile[] shuffledTiles = new tile[7];
+        int mid = 6/2;
+        int k = 0; 
+        for (int i = 0; i < mid; i++) {
+            shuffledTiles[k] = playerTiles[i];
+            shuffledTiles[k+1] = playerTiles[mid + i];
+            k = k + 2;
+        }
+        shuffledTiles[6] = playerTiles[0];
+        shuffledTiles[0] = playerTiles[5]; 
+        shuffledTiles[5] = playerTiles[6]; 
+        p1tiles = shuffledTiles;
+	}
+	
+	public void skip() {
+		//method for player to skip turn 
+		strDir = "You skipped your turn."; 
+		if(p1turn) {
+			p1turn = false;
+			//AI.makeMove(); 
+		}else {
+			//AI.makeMove(); 
+			return; 
+		}
+	}
+
+	public void exchange() {
+		//method to exchange players tiles for new ones
+		strDir = "You exchanged your tiles and forfeited your turn.";
+		tile [] newPlayerTiles = new tile[7]; 
+		for(int i=0;i < 7;i++) {
+			newPlayerTiles[i] = bag.pop(); 
+		}
+		for(tile playerTile : p1tiles) {
+			bag.push(playerTile);
+		}
+		p1tiles = newPlayerTiles; 
+		p1turn = false; 
+	}
+	
 	//resetTurn()
 	//
 	//undoPlacement()
 	//
-	//
-
-
-
-
-
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
+	//	
 }
