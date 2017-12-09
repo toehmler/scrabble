@@ -2,8 +2,9 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
-public class scrabbleCanvas extends Canvas implements MouseListener {
+public class scrabbleCanvas extends Canvas implements MouseListener, KeyListener {
 
 	protected int scoreX;
 	protected int p1X;
@@ -25,20 +26,16 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 	boolean submitClicked; 
 	protected int playerTileHeight;
 
-
-
 	protected int directionsX;
 	protected int shuffleX;
 	protected int skipX;
 	protected int exchangeX;
+	protected int undoX; 
 	boolean shuffleClicked; 
 	boolean skipClicked; 
 	boolean exchangeClicked; 
+	boolean undoClicked; 
 	protected int directionsHeight;
-
-
-
-	
 
 	public static final Color LIGHTyellow = new Color(255, 255, 153);
 	public static final Color LIGHTred = new Color(255,102,102);
@@ -48,10 +45,7 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 	public static final Color DARKred = new Color(153, 0, 0); 
 	public static final Color DARKyellow = new Color(255, 204, 0); 
 	public static final Color DARKERyellow = new Color(153, 102, 0); 
-	public static final Color GREEN = new Color(0, 180, 0);
-
-
-
+	public static final Color GREEN = new Color(0, 180, 0); 
 
 	public scrabbleCanvas(boardLogic logic) {
 		this.scoreX = 15;
@@ -70,12 +64,14 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 		this.playerTileSize = 62;
 		this.submitClicked = false;
 		this.directionsX = 3;
-		this.shuffleX = 270;
-		this.skipX = 345;
-		this.exchangeX = 428;
+		this.shuffleX = 263; //270
+		this.skipX = 318; //345
+		this.exchangeX = 380; //428
+		this.undoX = 453; 
 		shuffleClicked = false; 
 		skipClicked = false; 
 		exchangeClicked = false; 
+		undoClicked = false; 
 		this.directionsHeight = 60;
 		this.playerTileHeight = 62;
 
@@ -105,12 +101,12 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(cwsX + 100, scoreHeight-33, 22, 18, 5, 5);
 		g.setColor(Color.BLACK);
-		g.drawString("Current Word Score    0", cwsX, scoreHeight-20);
+		g.drawString("Current Word Score   "+String.valueOf(logic.scoreWord(logic.currentWord)), cwsX, scoreHeight-20);
 		g.drawRoundRect(plX + 55, scoreHeight-33, 22, 18, 5, 5);
 		g.setColor(Color.WHITE);
 		g.fillRoundRect(plX + 55, scoreHeight-33, 22, 18, 5, 5);
 		g.setColor(Color.BLACK);
-		g.drawString("Pieces left   0", plX, scoreHeight-20);
+		g.drawString("Pieces left   "+String.valueOf(logic.bag.size()), plX, scoreHeight-20);
 		g.drawRect(0, 0, 235, 50);
 
 
@@ -147,32 +143,37 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 				g.setColor(DARKERyellow);
 			else 
 				g.setColor(DARKyellow);
-			g.fillRoundRect(248,scoreHeight+boardHeight,82,62,10,10);
+			g.fillRoundRect(248,scoreHeight+boardHeight,62,62,10,10);
 			g.setColor(Color.black);
-			g.drawRoundRect(248,scoreHeight+boardHeight,82,62,10,10);
+			g.drawRoundRect(248,scoreHeight+boardHeight,62,62,10,10);
 			if(skipClicked) 
 				g.setColor(DARKblue);
 			else 
 				g.setColor(LIGHTblue);
-			g.fillRoundRect(330,scoreHeight+boardHeight,83,62,10,10);
+			g.fillRoundRect(310,scoreHeight+boardHeight,62,62,10,10);
 			g.setColor(Color.black);
-			g.drawRoundRect(330,scoreHeight+boardHeight,83,62,10,10);
+			g.drawRoundRect(310,scoreHeight+boardHeight,62,62,10,10);
 			if(exchangeClicked) 
 				g.setColor(DARKred);
 			else 
 				g.setColor(LIGHTred);
-			g.fillRoundRect(413,scoreHeight+boardHeight,83,62,10,10);
+			g.fillRoundRect(372,scoreHeight+boardHeight,62,62,10,10);
 			g.setColor(Color.BLACK);
-			g.drawRoundRect(413,scoreHeight+boardHeight,83,62,10,10);
+			g.drawRoundRect(372,scoreHeight+boardHeight,62,62,10,10);
+			if(undoClicked)
+				g.setColor(Color.darkGray); 
+			else
+				g.setColor(Color.LIGHT_GRAY); 
+			g.fillRoundRect(434,scoreHeight+boardHeight,62,62,10,10);
+			g.setColor(Color.BLACK);
+			g.drawRoundRect(434,scoreHeight+boardHeight,62,62,10,10);
 			g.drawString("Shuffle", shuffleX, 35+scoreHeight+boardHeight);
 			g.drawString("Skip Turn", skipX, 35+scoreHeight+boardHeight);
 			g.drawString("Exchange", exchangeX, 35+scoreHeight+boardHeight);
+			g.drawString("Undo", undoX, 35+scoreHeight+boardHeight);
 			g.setFont(new Font("Impact", Font.PLAIN, 10));
 			g.drawString(logic.strDir, directionsX, 35+scoreHeight+boardHeight);
 		
-
-
-
 		// ------- painting second row of buttons ---------
 
 		for (int i=0;i<7;i++) {	
@@ -189,7 +190,7 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 			g.setFont(new Font("Arial", Font.BOLD, 20));
 			g.drawString(logic.p1tiles[i].letterVal, x + 25, 40+scoreHeight+boardHeight+directionsHeight);
 			g.setFont(new Font("Arial", Font.PLAIN, 9));
-			g.drawString(String.valueOf(logic.p1tiles[i].numVal), x + 55, 10+scoreHeight+boardHeight+directionsHeight);
+			g.drawString(String.valueOf(logic.p1tiles[i].numVal), x + 52, 12+scoreHeight+boardHeight+directionsHeight);
 		}
 		g.drawRoundRect((7*playerTileSize),scoreHeight+boardHeight+directionsHeight+3, playerTileSize, playerTileSize, 10, 10);
 		if(submitClicked)
@@ -229,16 +230,20 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 					repaint();
 				}
 			} else if (p.x>=shuffleX && p.x<skipX && y>=0 && y<directionsHeight) {
-				System.out.println("logic.shuffle()");
+				logic.shuffle(logic.p1tiles); 
 				shuffleClicked = true; 
 				repaint(); 
 			} else if (p.x>=skipX && p.x<exchangeX && y>=0 && y<directionsHeight) {
-				System.out.println("logic.skip()");
+				logic.skip(); 
 				skipClicked = true;
-			//	repaint(); 
-			}else if (p.x>=exchangeX && p.x<800 && y>=0 && y<directionsHeight) {
+				repaint(); 
+			}else if (p.x>=exchangeX && p.x<undoX && y>=0 && y<directionsHeight) {
 				exchangeClicked = true; 
-				System.out.println("logic.exchange()");
+				logic.exchange(); 
+				repaint();
+			}else if (p.x>=undoX && p.x<496 && y>=0 && y<directionsHeight) {
+				undoClicked = true; 
+				System.out.println("logic.undo()");
 				repaint();
 			}
 		} else {
@@ -256,22 +261,23 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
 			} else if (x>=(7*playerTileSize) && x<(8*playerTileSize) && y >= 0 && y<playerTileSize) {
 				System.out.println("submitMove()");
 				submitClicked = true; 
-				logic.submitCurrentWord();
+				try {
+					logic.submitCurrentWord();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				repaint();
 			}
-
-
-
-
 		}
 	}
 
-	//methods that are requried byb mouseListener interface
+	//methods that are requried by mouseListener interface
 	public void mouseReleased(MouseEvent event) { 
 		//for directions
 		shuffleClicked = false;
 		skipClicked = false;
 		exchangeClicked = false;
+		undoClicked = false; 
 		repaint();
 		//for playerTile
 		Point p = event.getPoint();
@@ -280,9 +286,21 @@ public class scrabbleCanvas extends Canvas implements MouseListener {
     		clicked[tileIndex] = false;
     		submitClicked = false;
     		repaint();
-	
 	}
 
+	public void keyPressed(KeyEvent event) {
+		String letter = String.valueOf(event.getKeyChar()).toUpperCase(); 
+		if(logic.isSelectedBlank(logic.p1tiles[logic.selectedTileIndex])) { 
+			logic.p1tiles[logic.selectedTileIndex].letterVal = letter; 
+			logic.strDir = "You have selected "+letter+" for your blank tile."; 
+			repaint(); 
+		}else {
+			return;
+		}
+	}
+	
+	public void keyTyped(KeyEvent e) {}
+	public void keyReleased(KeyEvent e) {}
 	public void mouseClicked(MouseEvent event) { }
 	public void mouseEntered(MouseEvent event) { }
 	public void mouseExited(MouseEvent event) { }
