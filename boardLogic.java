@@ -5,9 +5,13 @@ import java.awt.List;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.*;
+import java.io.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
-import structure.Vector;
 import java.util.*;
+import java.util.Vector;
 
 
 public class boardLogic {
@@ -42,13 +46,12 @@ public class boardLogic {
 	//placedTileIndices[0] = board index loc of the first playerTile
 
 	//track what words have been played (as strings)
-	public Vector wordsPlayed;
+	public Vector<word> wordsPlayed;
 
 	protected String[] dictionary = {"ABCD"};
 	
 	public boardLogic(scrabble display) {
 
-		ai = new scrabbleAI(this);
 		this.display = display;
 
 		//init and populate various storage objects
@@ -76,7 +79,7 @@ public class boardLogic {
 		selectedTileIndex = -1; //value >= 0 means a tile is selected
 		initPlacedTileIndices();
 
-		wordsPlayed = new Vector();
+		wordsPlayed = new Vector<word>();
 	}
 
 	protected void fillBag() {
@@ -417,14 +420,23 @@ public class boardLogic {
 	}
 
 	public static String [] parseDict() throws IOException {
-		BufferedReader file = new BufferedReader(new FileReader("scrabbleDict.txt"));
-		String word;
-		ArrayList<String> list = new ArrayList<String>();
-		while((word = file.readLine()) != null){
-		    list.add(word);
-		}
+		//BufferedReader file = new BufferedReader(new FileReader("scrabbleDict.txt"));
+
+		ArrayList<String>list = new ArrayList<String>();
+		try {
+			URL url = new URL("http://www.cs.middlebury.edu/~roehmler/fp/scrabbleDict.txt");
+			InputStream file = url.openStream();
+			BufferedReader bf = new BufferedReader(new InputStreamReader(file));
+			String word;
+			while((word = bf.readLine()) != null){
+				list.add(word);
+			}
+			file.close();
+		} catch(IOException err)
+		{}
 		String[] stringArr = list.toArray(new String[0]);
-		return stringArr; 
+		return stringArr;
+
 	}
 	
 	protected boolean wordisValid(word W) throws IOException {
